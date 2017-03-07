@@ -41,4 +41,53 @@
                             location="-1" />
   </xacro:if>
 
+
+  <!-- If enabled, generate the front SICK S300 LASER payload.
+       This uses the same mesh as the lms1xx since they are the footprint
+       and the simulation parameters can be variable. -->
+  <xacro:if value="$(optenv RIDGEBACK_FRONT_S300_LASER 0)">
+    <xacro:sick_lms1xx_mount prefix="front"
+                            topic="front/scan"
+                            location="1" />
+  </xacro:if>
+
+  <!-- If enabled, generate the rear SICK S300 LASER payload. -->
+  <xacro:if value="$(optenv RIDGEBACK_REAR_S300_LASER 0)">
+    <xacro:sick_lms1xx_mount prefix="rear"
+                            topic="rear/scan"
+                            location="-1" />
+  </xacro:if>
+
+  <!-- If enabled, generate the optional Microstrain 3DM-GX2/3 IMU payload. -->
+  <xacro:if value="$(optenv RIDGEBACK_MICROSTRAIN_IMU 0)">
+    <link name="$(optenv RIDGEBACK_MICROSTRAIN_IMU_LINK upgraded)_imu_link" />
+    <joint name="$(optenv RIDGEBACK_MICROSTRAIN_IMU_MOUNT mid)_imu_joint" type="fixed">
+      <origin xyz="$(optenv RIDGEBACK_MICROSTRAIN_IMU_OFFSET 0 0 0)"
+              rpy="$(optenv RIDGEBACK_MICROSTRAIN_IMU_RPY 0 0 0)" />
+      <parent link="$(optenv RIDGEBACK_MICROSTRAIN_IMU_MOUNT mid)_mount" />
+      <child link="$(optenv RIDGEBACK_MICROSTRAIN_IMU_LINK upgraded)_imu_link" />
+    </joint>
+  </xacro:if>
+
+  <xacro:include filename="$(find pointgrey_camera_description)/urdf/pointgrey_flea3.urdf.xacro" />
+
+  <xacro:if value="$(optenv JACKAL_FLEA3 0)">
+    <camera_mount prefix="$(optenv JACKAL_FLEA3_MOUNT front)"
+                       tilt="$(optenv JACKAL_FLEA3_TILT 0.5236)"/>
+    <joint name="$(optenv JACKAL_FLEA3_MOUNT front)_camera_mount_joint" type="fixed">
+      <origin xyz="$(optenv JACKAL_FLEA3_OFFSET 0 0 0)"
+              rpy="$(optenv JACKAL_FLEA3_RPY 0 0 0)" />
+      <parent link="$(optenv JACKAL_FLEA3_MOUNT front)_mount" />
+      <child link="$(optenv JACKAL_FLEA3_MOUNT front)_camera_mount" />
+    </joint>
+
+    <pointgrey_flea3 frame="$(optenv JACKAL_FLEA3_MOUNT front)_camera" name="$(optenv JACKAL_FLEA3_NAME front)"
+      camera_x="0.0754" camera_y="0.029" camera_z="0.035"
+      camera_mass="0.085" hfov="1.0471975512" fps="60" width="640" height="512"/>
+    <joint name="$(optenv JACKAL_FLEA3_MOUNT front)_camera_bracket_joint" type="fixed">
+      <origin xyz="0.020 0 0.0245" rpy="0 0 0" />
+      <parent link="$(optenv JACKAL_FLEA3_MOUNT front)_camera_beam" />
+      <child link="$(optenv JACKAL_FLEA3_MOUNT front)_camera" />
+    </joint>
+  </xacro:if>
 </robot>
