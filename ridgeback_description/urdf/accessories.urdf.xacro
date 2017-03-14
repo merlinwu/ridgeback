@@ -16,29 +16,29 @@
   <!-- If enabled, generate the front HOKUYO UST-10LX LASER payload. -->
   <xacro:if value="$(optenv RIDGEBACK_FRONT_HOKUYO_LASER 0)">
     <xacro:hokuyo_ust-10lx_mount prefix="front"
-                            topic="front/scan"
-                            location="1" />
+                                 topic="front/scan"
+                                 location="1" />
   </xacro:if>
 
   <!-- If enabled, generate the rear HOKUYO UST-10LX LASER payload. -->
   <xacro:if value="$(optenv RIDGEBACK_REAR_HOKUYO_LASER 0)">
     <xacro:hokuyo_ust-10lx_mount prefix="rear"
-                            topic="rear/scan"
-                            location="-1" />
+                                 topic="rear/scan"
+                                 location="-1" />
   </xacro:if>
 
   <!-- If enabled, generate the front SICK LMS111 LASER payload. -->
   <xacro:if value="$(optenv RIDGEBACK_FRONT_SICK_LASER 0)">
     <xacro:sick_lms1xx_mount prefix="front"
-                            topic="front/scan"
-                            location="1" />
+                             topic="front/scan"
+                             location="1" />
   </xacro:if>
 
   <!-- If enabled, generate the rear SICK LMS111 LASER payload. -->
   <xacro:if value="$(optenv RIDGEBACK_REAR_SICK_LASER 0)">
     <xacro:sick_lms1xx_mount prefix="rear"
-                            topic="rear/scan"
-                            location="-1" />
+                             topic="rear/scan"
+                             location="-1" />
   </xacro:if>
 
 
@@ -47,15 +47,15 @@
        and the simulation parameters can be variable. -->
   <xacro:if value="$(optenv RIDGEBACK_FRONT_S300_LASER 0)">
     <xacro:sick_lms1xx_mount prefix="front"
-                            topic="front/scan"
-                            location="1" />
+                             topic="front/scan"
+                             location="1" />
   </xacro:if>
 
   <!-- If enabled, generate the rear SICK S300 LASER payload. -->
   <xacro:if value="$(optenv RIDGEBACK_REAR_S300_LASER 0)">
     <xacro:sick_lms1xx_mount prefix="rear"
-                            topic="rear/scan"
-                            location="-1" />
+                             topic="rear/scan"
+                             location="-1" />
   </xacro:if>
 
   <!-- If enabled, generate the optional Microstrain 3DM-GX2/3 IMU payload. -->
@@ -67,27 +67,41 @@
       <parent link="$(optenv RIDGEBACK_MICROSTRAIN_IMU_MOUNT mid)_mount" />
       <child link="$(optenv RIDGEBACK_MICROSTRAIN_IMU_LINK upgraded)_imu_link" />
     </joint>
+
+    <gazebo>
+      <plugin name="upgraded_imu_controller" filename="libhector_gazebo_ros_imu.so">
+        <robotNamespace>/</robotNamespace>
+        <updateRate>50.0</updateRate>
+        <bodyName>upgraded_imu_link</bodyName>
+        <topicName>upgraded_imu/data</topicName>
+        <accelDrift>0.005 0.005 0.005</accelDrift>
+        <accelGaussianNoise>0.005 0.005 0.005</accelGaussianNoise>
+        <rateDrift>0.005 0.005 0.005 </rateDrift>
+        <rateGaussianNoise>0.005 0.005 0.005 </rateGaussianNoise>
+        <headingDrift>0.005</headingDrift>
+        <headingGaussianNoise>0.005</headingGaussianNoise>
+      </plugin>
+    </gazebo>
   </xacro:if>
 
+  <!-- If enabled, generate the PointGrey Flea3 camera payload.. -->
   <xacro:include filename="$(find pointgrey_camera_description)/urdf/pointgrey_flea3.urdf.xacro" />
-
-  <xacro:if value="$(optenv JACKAL_FLEA3 0)">
-    <camera_mount prefix="$(optenv JACKAL_FLEA3_MOUNT front)"
-                       tilt="$(optenv JACKAL_FLEA3_TILT 0.5236)"/>
-    <joint name="$(optenv JACKAL_FLEA3_MOUNT front)_camera_mount_joint" type="fixed">
-      <origin xyz="$(optenv JACKAL_FLEA3_OFFSET 0 0 0)"
-              rpy="$(optenv JACKAL_FLEA3_RPY 0 0 0)" />
-      <parent link="$(optenv JACKAL_FLEA3_MOUNT front)_mount" />
-      <child link="$(optenv JACKAL_FLEA3_MOUNT front)_camera_mount" />
+  <xacro:if value="$(optenv RIDGEBACK_FLEA3 0)">
+    <joint name="$(optenv RIDGEBACK_FLEA3_MOUNT camera)_mount_joint" type="fixed">
+      <origin xyz="$(optenv RIDGEBACK_FLEA3_OFFSET 0 0 0)"
+              rpy="$(optenv RIDGEBACK_FLEA3_RPY 0 0 0)" />
+      <parent link="$(optenv RIDGEBACK_FLEA3_MOUNT mid)_mount" />
+      <child link="$(optenv RIDGEBACK_FLEA3_MOUNT camera)_mount" />
     </joint>
-
-    <pointgrey_flea3 frame="$(optenv JACKAL_FLEA3_MOUNT front)_camera" name="$(optenv JACKAL_FLEA3_NAME front)"
+   <link name="$(optenv RIDGEBACK_FLEA3_MOUNT camera)_mount" />
+    <pointgrey_flea3 frame="$(optenv RIDGEBACK_FLEA3_MOUNT camera)_link" name="$(optenv RIDGEBACK_FLEA3_NAME camera)"
       camera_x="0.0754" camera_y="0.029" camera_z="0.035"
       camera_mass="0.085" hfov="1.0471975512" fps="60" width="640" height="512"/>
-    <joint name="$(optenv JACKAL_FLEA3_MOUNT front)_camera_bracket_joint" type="fixed">
+    <joint name="$(optenv RIDGEBACK_FLEA3_MOUNT camera)_bracket_joint" type="fixed">
       <origin xyz="0.020 0 0.0245" rpy="0 0 0" />
-      <parent link="$(optenv JACKAL_FLEA3_MOUNT front)_camera_beam" />
-      <child link="$(optenv JACKAL_FLEA3_MOUNT front)_camera" />
+      <parent link="$(optenv RIDGEBACK_FLEA3_MOUNT camera)_mount" />
+      <child link="$(optenv RIDGEBACK_FLEA3_MOUNT camera)_link" />
     </joint>
   </xacro:if>
+
 </robot>
