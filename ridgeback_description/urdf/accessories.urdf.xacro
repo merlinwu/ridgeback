@@ -67,21 +67,6 @@
       <parent link="$(optenv RIDGEBACK_MICROSTRAIN_IMU_MOUNT mid)_mount" />
       <child link="$(optenv RIDGEBACK_MICROSTRAIN_IMU_LINK upgraded)_imu_link" />
     </joint>
-
-    <gazebo>
-      <plugin name="upgraded_imu_controller" filename="libhector_gazebo_ros_imu.so">
-        <robotNamespace>/</robotNamespace>
-        <updateRate>50.0</updateRate>
-        <bodyName>upgraded_imu_link</bodyName>
-        <topicName>upgraded_imu/data</topicName>
-        <accelDrift>0.005 0.005 0.005</accelDrift>
-        <accelGaussianNoise>0.005 0.005 0.005</accelGaussianNoise>
-        <rateDrift>0.005 0.005 0.005 </rateDrift>
-        <rateGaussianNoise>0.005 0.005 0.005 </rateGaussianNoise>
-        <headingDrift>0.005</headingDrift>
-        <headingGaussianNoise>0.005</headingGaussianNoise>
-      </plugin>
-    </gazebo>
   </xacro:if>
 
   <!-- If enabled, generate the PointGrey Flea3 camera payload.. -->
